@@ -51,7 +51,7 @@ Project uses genetic algorithm to satisfy the constraints related to Timetable s
    pip install django
    pip install -r requirements.txt
 
-##Technologies Used
+## Technologies Used
 Django: Backend framework for managing routes, views, and database.
 HTML/CSS: Frontend design and styling.
 JavaScript: For date selection and handling the download action.
