@@ -53,13 +53,9 @@ Project uses genetic algorithm to satisfy the constraints related to Timetable s
 
 ## Technologies Used
 **Django**: Backend framework for managing routes, views, and database.
-
 **HTML/CSS**: Frontend design and styling.
-
 **JavaScript**: For date selection and handling the download action.
-
 **SQLite3**: Used for storing timetable and related data.
-
 **AJAX**: For generating and downloading the timetable without refreshing the page.
 
 
