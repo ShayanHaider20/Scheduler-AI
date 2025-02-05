@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load index %}
+
+<div>
+  <h2>Select Date:</h2>
+  <input type="date" id="date-picker" style="font-size: 18px; padding: 10px;">
+
+  {% for section in sections %}
+  <h2 class="secHead">{{ section.section_id }} ({{ section.department }})</h2>
+  <table class="timetable">
+    <thead>
+      <tr>
+        <th>Class #</th>
+        {% for time in timeSlots %}
+        <th>{{time.0}}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+
+    <tbody id="timetable-body">
+      {% for week in weekDays %}
+      <tr class="timetable-row">
+        <th>{{week.0}}</th>
+        {% for time in timeSlots %}
+        <td class="timetable-cell">
+          {% for class_item in schedule %}
+            {% if class_item.section == section.section_id and class_item.meeting_time.day == week.0 and class_item.meeting_time.time == time.0 %}
+              {{ class_item.course.course_name }} (Room: {{class_item.room.r_number }})
+            {% endif %}
+          {% endfor %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% endfor %}
+  <button id="download-btn" style="background-color: #4CAF50; /* green7 */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;">Download Timetable</button>
+  <a id="download-link" style="display: none;"></a>
+</div>
+
+<script>
+  document.getElementById("download-btn").addEventListener("click", function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/generate_timetable/", true);
+    xhr.responseType = "blob";
+
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var blob = new Blob([xhr.response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        var url = window.URL.createObjectURL(blob);
+        document.getElementById("download-link").href = url;
+        document.getElementById("download-link").download = "timetable.xlsx";
+        document.getElementById("download-link").click();
+        window.URL.revokeObjectURL(url);
+      }
+    };
+
+    xhr.send();
+  });
+  document.getElementById("date-picker").addEventListener("change", function() {
+    var selectedDate = new Date(this.value);
+    var selectedDay = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+    var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+    var timetableRows = document.querySelectorAll(".timetable-row");
+
+    timetableRows.forEach(function(row) {
+      var rowDay = row.querySelector("th").innerText;
+      if (rowDay !== daysOfWeek[selectedDate.getDay()]) {
+        row.style.display = "none";
+      } else {
+        row.style.display = "";
+      }
+    });
+});
+</script>
+
+{% endblock %}
